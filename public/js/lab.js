@@ -77,10 +77,10 @@ function renderSchedule() {
             ? 'ISTIRAHAT'
             : `JAM KE - ${curr.jamKe}`;
         waktuEl.textContent = curr.waktu;
-        guruEl.textContent = curr.guru;
-        mapelEl.textContent = curr.mapel;
+        guruEl.textContent = penanggungjawabLab.nama;
+        mapelEl.textContent = 'Penanggung Jawab Lab';
         labEl.textContent = curr.ruangan;
-        fotoGuru.src = curr.foto;
+        fotoGuru.src = penanggungjawabLab.foto;
     }
 
     if (scheduleScroll) {

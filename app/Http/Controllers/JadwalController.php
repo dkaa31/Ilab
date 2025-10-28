@@ -10,134 +10,146 @@ use Illuminate\Http\Request;
 
 class JadwalController extends Controller
 {
-    protected $hariValid = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+   public function index()
+{
+    $hari = session('filter_hari', 'Senin'); // default Senin
+    $ruanganId = session('filter_ruangan_id');
 
-    public function index($hari)
-    {
-        if (!in_array($hari, $this->hariValid)) {
-            abort(404);
-        }
+    $jadwals = Jadwal::with(['guru', 'mapel', 'ruangan'])
+        ->where('hari', $hari);
 
-        $jadwals = Jadwal::where('hari', $hari)
-            ->with(['guru', 'mapel', 'ruangan'])
-            ->orderBy('waktu_mulai')
-            ->get();
-
-        return view('jadwal.index', compact('jadwals', 'hari'));
+    if ($ruanganId) {
+        $jadwals->where('ruangan_id', $ruanganId);
     }
 
-    public function create($hari)
-    {
-        if (!in_array($hari, $this->hariValid)) {
-            abort(404);
-        }
+    $jadwals = $jadwals->orderBy('waktu_mulai')->get();
 
-        $gurus = Guru::all();
-        $mapels = Mapel::all();
-        $ruangans = Ruangan::all();
+    $ruangans = Ruangan::all();
 
-        return view('jadwal.create', compact('hari', 'gurus', 'mapels', 'ruangans'));
-    }
+    return view('jadwal.index', compact('jadwals', 'hari', 'ruangans', 'ruanganId'));
+}
 
-    public function store(Request $request, $hari)
-    {
-        if (!in_array($hari, $this->hariValid)) {
-            abort(404);
-        }
+// Tambahkan method filter
+public function filter(Request $request)
+{
+    $request->validate([
+        'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat',
+        'ruangan_id' => 'nullable|exists:ruangans,id',
+    ]);
 
+    session(['filter_hari' => $request->hari, 'filter_ruangan_id' => $request->ruangan_id]);
+
+    return redirect()->route('jadwal.index');
+}
+
+// Ubah create
+public function create()
+{
+    $hari = session('filter_hari', 'Senin');
+    $ruanganId = session('filter_ruangan_id');
+
+    $gurus = Guru::all();
+    $mapels = Mapel::all();
+    $ruangans = Ruangan::all();
+
+    return view('jadwal.create', compact('hari', 'ruanganId', 'gurus', 'mapels', 'ruangans'));
+}
+
+// Ubah store
+public function store(Request $request)
+{
+    $request->validate([
+        'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat',
+        'jam_ke' => 'required|string|max:20',
+        'waktu_mulai' => 'required|date_format:H:i',
+        'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
+        'ruangan_id' => 'required|exists:ruangans,id',
+        'status' => 'required|in:Aktif,Istirahat',
+    ]);
+
+    $data = [
+        'hari' => $request->hari,
+        'jam_ke' => $request->jam_ke,
+        'waktu_mulai' => $request->waktu_mulai,
+        'waktu_selesai' => $request->waktu_selesai,
+        'ruangan_id' => $request->ruangan_id,
+        'status' => $request->status,
+        'guru_id' => null,
+        'mapel_id' => null,
+    ];
+
+    if ($request->status === 'Aktif') {
         $request->validate([
-            'jam_ke' => 'required|string|max:20',
-            'waktu_mulai' => 'required|date_format:H:i',
-            'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
-            'ruangan_id' => 'required|exists:ruangans,id',
-            'status' => 'required|in:Aktif,Istirahat',
+            'guru_id' => 'required|exists:gurus,id',
+            'mapel_id' => 'required|exists:mapels,id',
         ]);
-
-        $data = [
-            'hari' => $hari,
-            'jam_ke' => $request->jam_ke,
-            'waktu_mulai' => $request->waktu_mulai,
-            'waktu_selesai' => $request->waktu_selesai,
-            'ruangan_id' => $request->ruangan_id,
-            'status' => $request->status,
-            'guru_id' => null,
-            'mapel_id' => null,
-        ];
-
-        if ($request->status === 'Aktif') {
-            $request->validate([
-                'guru_id' => 'required|exists:gurus,id',
-                'mapel_id' => 'required|exists:mapels,id',
-            ]);
-            $data['guru_id'] = $request->guru_id;
-            $data['mapel_id'] = $request->mapel_id;
-        }
-
-        Jadwal::create($data);
-
-        return redirect()->route('jadwal.hari', $hari)->with('success', 'Jadwal berhasil ditambahkan.');
+        $data['guru_id'] = $request->guru_id;
+        $data['mapel_id'] = $request->mapel_id;
     }
 
-    public function edit($hari, Jadwal $jadwal)
-    {
-        if (!in_array($hari, $this->hariValid) || $jadwal->hari !== $hari) {
-            abort(404);
-        }
+    Jadwal::create($data);
 
-        $gurus = Guru::all();
-        $mapels = Mapel::all();
-        $ruangans = Ruangan::all();
+    // Redirect ke index dengan filter yang sama
+    return redirect()->route('jadwal.index')
+        ->with('success', 'Jadwal berhasil ditambahkan.')
+        ->withInput(['hari' => $request->hari, 'ruangan_id' => $request->ruangan_id]);
+}
 
-        return view('jadwal.edit', compact('hari', 'jadwal', 'gurus', 'mapels', 'ruangans'));
-    }
+// Ubah edit
+public function edit(Jadwal $jadwal)
+{
+    $gurus = Guru::all();
+    $mapels = Mapel::all();
+    $ruangans = Ruangan::all();
+    $hari = $jadwal->hari; // Ambil hari dari data jadwal
 
-    public function update(Request $request, $hari, Jadwal $jadwal)
-    {
-        if (!in_array($hari, $this->hariValid) || $jadwal->hari !== $hari) {
-            abort(404);
-        }
+    return view('jadwal.edit', compact('jadwal', 'hari', 'gurus', 'mapels', 'ruangans'));
+}
 
-        // Validasi sama seperti store
+// Ubah update
+public function update(Request $request, Jadwal $jadwal)
+{
+    // Validasi sama seperti store, tapi tanpa hari (karena tidak boleh diubah)
+    $request->validate([
+        'jam_ke' => 'required|string|max:20',
+        'waktu_mulai' => 'required|date_format:H:i',
+        'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
+        'ruangan_id' => 'required|exists:ruangans,id',
+        'status' => 'required|in:Aktif,Istirahat',
+    ]);
+
+    $data = [
+        'jam_ke' => $request->jam_ke,
+        'waktu_mulai' => $request->waktu_mulai,
+        'waktu_selesai' => $request->waktu_selesai,
+        'ruangan_id' => $request->ruangan_id,
+        'status' => $request->status,
+        'guru_id' => null,
+        'mapel_id' => null,
+    ];
+
+    if ($request->status === 'Aktif') {
         $request->validate([
-            'jam_ke' => 'required|string|max:20',
-            'waktu_mulai' => 'required|date_format:H:i',
-            'waktu_selesai' => 'required|date_format:H:i|after:waktu_mulai',
-            'ruangan_id' => 'required|exists:ruangans,id',
-            'status' => 'required|in:Aktif,Istirahat',
+            'guru_id' => 'required|exists:gurus,id',
+            'mapel_id' => 'required|exists:mapels,id',
         ]);
-
-        $data = [
-            'jam_ke' => $request->jam_ke,
-            'waktu_mulai' => $request->waktu_mulai,
-            'waktu_selesai' => $request->waktu_selesai,
-            'ruangan_id' => $request->ruangan_id,
-            'status' => $request->status,
-            'guru_id' => null,
-            'mapel_id' => null,
-        ];
-
-        if ($request->status === 'Aktif') {
-            $request->validate([
-                'guru_id' => 'required|exists:gurus,id',
-                'mapel_id' => 'required|exists:mapels,id',
-            ]);
-            $data['guru_id'] = $request->guru_id;
-            $data['mapel_id'] = $request->mapel_id;
-        }
-
-        $jadwal->update($data);
-
-        return redirect()->route('jadwal.hari', $hari)->with('success', 'Jadwal berhasil diperbarui.');
+        $data['guru_id'] = $request->guru_id;
+        $data['mapel_id'] = $request->mapel_id;
     }
 
-    public function destroy($hari, Jadwal $jadwal)
-    {
-        if (!in_array($hari, $this->hariValid) || $jadwal->hari !== $hari) {
-            abort(404);
-        }
+    $jadwal->update($data);
 
-        $jadwal->delete();
+    return redirect()->route('jadwal.index')
+        ->with('success', 'Jadwal berhasil diperbarui.')
+        ->withInput(['hari' => $jadwal->hari, 'ruangan_id' => $jadwal->ruangan_id]);
+}
 
-        return redirect()->route('jadwal.hari', $hari)->with('success', 'Jadwal berhasil dihapus.');
-    }
+// Ubah destroy
+public function destroy(Jadwal $jadwal)
+{
+    $jadwal->delete();
+
+    return redirect()->route('jadwal.index')
+        ->with('success', 'Jadwal berhasil dihapus.');
+}
 }

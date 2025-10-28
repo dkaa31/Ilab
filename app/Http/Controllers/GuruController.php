@@ -13,7 +13,7 @@ class GuruController extends Controller
      */
     public function index()
     {
-        $gurus = Guru::latest()->get();
+        $gurus = Guru::orderBy('nama')->get();
         return view('guru.index', compact('gurus'));
     }
 

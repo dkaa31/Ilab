@@ -8,8 +8,12 @@
         <div class="card-header">
             <h3 class="card-title">Jadwal Hari {{ $hari }}</h3>
         </div>
-        <form action="{{ route('jadwal.store', $hari) }}" method="POST">
+        <form action="{{ route('jadwal.store') }}" method="POST">
             @csrf
+
+            {{-- Kirim hari via hidden input --}}
+            <input type="hidden" name="hari" value="{{ $hari }}">
+
             <div class="card-body">
                 <div class="form-group">
                     <label for="jam_ke">Jam Ke</label>
@@ -41,7 +45,7 @@
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select name="status" class="form-control" id="status" required>
-                        <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                        <option value="Aktif" {{ old('status', 'Aktif') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                         <option value="Istirahat" {{ old('status') == 'Istirahat' ? 'selected' : '' }}>Istirahat</option>
                     </select>
                 </div>
@@ -83,7 +87,8 @@
                     <select name="ruangan_id" class="form-control @error('ruangan_id') is-invalid @enderror" required>
                         <option value="">-- Pilih Ruangan --</option>
                         @foreach($ruangans as $r)
-                            <option value="{{ $r->id }}" {{ old('ruangan_id') == $r->id ? 'selected' : '' }}>
+                            <option value="{{ $r->id }}" 
+                                {{ (old('ruangan_id', $ruanganId) == $r->id) ? 'selected' : '' }}>
                                 {{ $r->nama }}
                             </option>
                         @endforeach
@@ -94,7 +99,7 @@
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-between">
-                <a href="{{ route('jadwal.hari', $hari) }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
@@ -108,10 +113,15 @@ document.getElementById('status').addEventListener('change', function() {
     const fields = document.getElementById('aktif-fields');
     if (this.value === 'Istirahat') {
         fields.style.display = 'none';
-        fields.querySelectorAll('select').forEach(sel => sel.removeAttribute('required'));
+        fields.querySelectorAll('select').forEach(sel => {
+            sel.removeAttribute('required');
+            sel.value = ''; // opsional: kosongkan saat istirahat
+        });
     } else {
         fields.style.display = 'block';
-        fields.querySelectorAll('select[name="guru_id"], select[name="mapel_id"]').forEach(sel => sel.setAttribute('required', 'required'));
+        fields.querySelectorAll('select[name="guru_id"], select[name="mapel_id"]').forEach(sel => {
+            sel.setAttribute('required', 'required');
+        });
     }
 });
 // Trigger on load

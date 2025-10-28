@@ -1,16 +1,17 @@
 @extends('template.master')
-@section('atas', "Edit Jadwal - $hari")
-@section('judul', "Form Edit Jadwal ($hari)")
+@section('atas', "Edit Jadwal - " . $jadwal->hari)
+@section('judul', "Form Edit Jadwal (" . $jadwal->hari . ")")
 
 @section('conten')
 <div class="col-md-12">
     <div class="card card-primary">
         <div class="card-header">
-            <h3 class="card-title">Edit Jadwal Hari {{ $hari }}</h3>
+            <h3 class="card-title">Edit Jadwal Hari {{ $jadwal->hari }}</h3>
         </div>
-        <form action="{{ route('jadwal.update', [$hari, $jadwal->id]) }}" method="POST">
+        <form action="{{ route('jadwal.update', $jadwal->id) }}" method="POST">
             @csrf
             @method('PUT')
+
             <div class="card-body">
                 <div class="form-group">
                     <label for="jam_ke">Jam Ke</label>
@@ -95,7 +96,7 @@
                 </div>
             </div>
             <div class="card-footer d-flex justify-content-between">
-                <a href="{{ route('jadwal.hari', $hari) }}" class="btn btn-secondary">Batal</a>
+                <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </div>
         </form>

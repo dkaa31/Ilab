@@ -13,7 +13,7 @@ class RuanganController extends Controller
      */
     public function index()
     {
-        $ruangans = Ruangan::with('penanggungJawab')->latest()->get();
+        $ruangans = Ruangan::with('penanggungJawab')->orderBy('nama')->get();
         return view('ruangan.index', compact('ruangans'));
     }
 
