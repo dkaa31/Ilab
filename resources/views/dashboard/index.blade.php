@@ -16,7 +16,7 @@ Dashboard
       <div class="small-box bg-info">
         <div class="inner">
           <h3>{{ $jumlahGuru }}</h3>
-          <p>Total Guru</p>
+          <p>Guru</p>
         </div>
         <div class="icon">
           <i class="fas fa-chalkboard-teacher"></i>
@@ -48,7 +48,7 @@ Dashboard
       <div class="small-box bg-warning">
         <div class="inner">
           <h3>{{ $jumlahRuangan }}</h3>
-          <p>Ruangan Lab</p>
+          <p>Ruangan</p>
         </div>
         <div class="icon">
           <i class="fas fa-door-open"></i>
@@ -67,9 +67,25 @@ Dashboard
           <p>User</p>
         </div>
         <div class="icon">
-          <i class="fas fa-calendar-alt"></i>
+          <i class="fas fa-user-plus"></i>
         </div>
         <a href="{{ route('user.index') }}" class="small-box-footer">
+          Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
+    </div>
+
+
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="small-box bg-secondary">
+        <div class="inner">
+          <h3>{{ $jumlahKelas }}</h3>
+          <p>Kelas</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-school"></i>
+        </div>
+        <a href="{{ route('kelas.index') }}" class="small-box-footer">
           Lihat Detail <i class="fas fa-arrow-circle-right"></i>
         </a>
       </div>

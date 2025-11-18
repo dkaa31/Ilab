@@ -33,11 +33,10 @@ class RuanganController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:100|unique:ruangans,nama',
-            'lokasi' => 'nullable|string',
             'penanggung_jawab_id' => 'required|exists:gurus,id',
         ]);
 
-        Ruangan::create($request->only('nama', 'lokasi', 'penanggung_jawab_id'));
+        Ruangan::create($request->only('nama', 'penanggung_jawab_id'));
 
         return redirect()->route('ruangan.index')->with('success', 'Ruangan berhasil ditambahkan.');
     }

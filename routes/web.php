@@ -6,9 +6,10 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\TampilanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\KelaseController;
+use App\Http\Controllers\LabController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -18,10 +19,12 @@ Route::get('/login', fn () => view('login.login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::group(['middleware' => ['auth', 'check_role:murid,admin,guru']], function () {
-    Route::get('/lab', [TampilanController::class, 'index'])->name('lab.display');
+route::group(['middleware' =>['auth', 'check_role:admin,guru,murid']], function(){
+// Halaman pemilih lab
+Route::get('/lab', [LabController::class, 'selector'])->name('lab.selector');
+// Dashboard lab dinamis
+Route::get('/lab/{ruanganId}', [LabController::class, 'show'])->name('lab.show');
 });
-
 
 route::group(['middleware' =>['auth', 'check_role:admin,guru']], function(){
     //dashboard
@@ -34,6 +37,8 @@ route::group(['middleware' =>['auth', 'check_role:admin,guru']], function(){
     Route::resource('mapel', MapelController::class);
     // Ruangan
     Route::resource('ruangan', RuanganController::class);
+    //kelas
+    Route::resource('kelas', KelaseController::class)->parameters(['kelas' => 'kelase']);
     // Jadwal per hari
     Route::get('/jadwal', [JadwalController::class, 'index'])->name('jadwal.index');
     Route::post('/jadwal/filter', [JadwalController::class, 'filter'])->name('jadwal.filter');

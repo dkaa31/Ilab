@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use App\Models\Mapel;
 use App\Models\Ruangan;
+use App\Models\Kelase;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class JadwalController extends Controller
     $hari = session('filter_hari', 'Senin'); // default Senin
     $ruanganId = session('filter_ruangan_id');
 
-    $jadwals = Jadwal::with(['guru', 'mapel', 'ruangan'])
+    $jadwals = Jadwal::with(['guru', 'mapel', 'ruangan', 'kelase'])
         ->where('hari', $hari);
 
     if ($ruanganId) {
@@ -51,8 +52,9 @@ public function create()
     $gurus = Guru::all();
     $mapels = Mapel::all();
     $ruangans = Ruangan::all();
+    $kelases = Kelase::all();
 
-    return view('jadwal.create', compact('hari', 'ruanganId', 'gurus', 'mapels', 'ruangans'));
+    return view('jadwal.create', compact('hari', 'ruanganId', 'gurus', 'mapels', 'ruangans', 'kelases'));
 }
 
 // Ubah store
@@ -75,15 +77,18 @@ public function store(Request $request)
         'ruangan_id' => $request->ruangan_id,
         'status' => $request->status,
         'guru_id' => null,
+        'kelase_id' => null,
         'mapel_id' => null,
     ];
 
     if ($request->status === 'Aktif') {
         $request->validate([
             'guru_id' => 'required|exists:gurus,id',
+            'kelase_id' => 'required|exists:kelases,id',
             'mapel_id' => 'required|exists:mapels,id',
         ]);
         $data['guru_id'] = $request->guru_id;
+        $data['kelase_id'] = $request->kelase_id;
         $data['mapel_id'] = $request->mapel_id;
     }
 
@@ -101,9 +106,10 @@ public function edit(Jadwal $jadwal)
     $gurus = Guru::all();
     $mapels = Mapel::all();
     $ruangans = Ruangan::all();
+    $kelases = Kelase::all();
     $hari = $jadwal->hari; // Ambil hari dari data jadwal
 
-    return view('jadwal.edit', compact('jadwal', 'hari', 'gurus', 'mapels', 'ruangans'));
+    return view('jadwal.edit', compact('jadwal', 'hari', 'gurus', 'mapels', 'ruangans', 'kelases'));
 }
 
 // Ubah update
@@ -125,15 +131,18 @@ public function update(Request $request, Jadwal $jadwal)
         'ruangan_id' => $request->ruangan_id,
         'status' => $request->status,
         'guru_id' => null,
+        'kelase_id' => null,
         'mapel_id' => null,
     ];
 
     if ($request->status === 'Aktif') {
         $request->validate([
             'guru_id' => 'required|exists:gurus,id',
+            'kelase_id' => 'required|exists:kelases,id',
             'mapel_id' => 'required|exists:mapels,id',
         ]);
         $data['guru_id'] = $request->guru_id;
+        $data['kelase_id'] = $request->kelase_id;
         $data['mapel_id'] = $request->mapel_id;
     }
 

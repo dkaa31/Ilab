@@ -44,6 +44,7 @@ function renderSchedule() {
     const labEl = document.querySelector('.lab');
     const fotoGuru = document.getElementById('FotoGuru');
 
+    // Jika tidak ada jadwal sama sekali hari ini
     if (jadwalKosong) {
         jamEl.textContent = 'TIDAK ADA JADWAL';
         waktuEl.textContent = '06:30 - 15:00';
@@ -58,6 +59,7 @@ function renderSchedule() {
     const activeIndex = getCurrentScheduleIndex();
 
     if (activeIndex === -1) {
+        // Belum masuk jam pelajaran
         jamEl.textContent = 'BELUM MASUK';
         waktuEl.textContent = '06:30 - 15:00';
         guruEl.textContent = penanggungjawabLab.nama;
@@ -65,6 +67,7 @@ function renderSchedule() {
         labEl.textContent = penanggungjawabLab.lab;
         fotoGuru.src = penanggungjawabLab.foto;
     } else if (activeIndex === -2) {
+        // Sudah lewat jam pulang
         jamEl.textContent = 'JAM PULANG';
         waktuEl.textContent = '06:30 - 15:00';
         guruEl.textContent = penanggungjawabLab.nama;
@@ -72,17 +75,25 @@ function renderSchedule() {
         labEl.textContent = penanggungjawabLab.lab;
         fotoGuru.src = penanggungjawabLab.foto;
     } else {
+        // Sedang dalam jadwal aktif (pelajaran atau istirahat)
         const curr = jadwalHarian[activeIndex];
-        jamEl.textContent = curr.jamKe === "Istirahat"
-            ? 'ISTIRAHAT'
-            : `JAM KE - ${curr.jamKe}`;
-        waktuEl.textContent = curr.waktu;
-        guruEl.textContent = penanggungjawabLab.nama;
-        mapelEl.textContent = 'Penanggung Jawab Lab';
+
+        // Gunakan data dari jadwal aktif, BUKAN dari penanggungjawabLab
+        guruEl.textContent = curr.guru;
+        mapelEl.textContent = curr.mapel;
         labEl.textContent = curr.ruangan;
-        fotoGuru.src = penanggungjawabLab.foto;
+        fotoGuru.src = curr.foto;
+
+        // Atur teks jam berdasarkan jenis jadwal
+        if (curr.jamKe === "Istirahat") {
+            jamEl.textContent = 'ISTIRAHAT';
+        } else {
+            jamEl.textContent = `JAM KE - ${curr.jamKe}`;
+        }
+        waktuEl.textContent = curr.waktu;
     }
 
+    // Render daftar jadwal di bawah (scrolling list)
     if (scheduleScroll) {
         scheduleScroll.innerHTML = '';
         jadwalHarian.forEach((jadwal, i) => {
@@ -153,9 +164,10 @@ function updateClock() {
     document.getElementById('tanggal').textContent = `${day}, ${date} ${month} ${year}`;
 }
 
+// Jalankan saat DOM siap
 document.addEventListener('DOMContentLoaded', () => {
     renderSchedule();
     updateClock();
     setInterval(updateClock, 1000);
-    setInterval(renderSchedule, 60000);
+    setInterval(renderSchedule, 60000); // Perbarui setiap menit
 });

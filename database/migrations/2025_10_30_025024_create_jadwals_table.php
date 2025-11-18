@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('guru_id')->nullable()->constrained('gurus')->onDelete('set null');
         $table->foreignId('mapel_id')->nullable()->constrained('mapels')->onDelete('set null');
         $table->foreignId('ruangan_id')->constrained('ruangans')->onDelete('cascade');
+        $table->foreignId('kelase_id')->constrained('kelases')->onDelete('cascade');
         $table->enum('status', ['Aktif','Istirahat'])->default('Aktif');
             $table->timestamps();
         });

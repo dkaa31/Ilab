@@ -80,6 +80,21 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="form-group">
+                        <label for="kelase_id">Kelas</label>
+                        <select name="kelase_id" class="form-control @error('mapel_id') is-invalid @enderror">
+                            <option value="">-- Pilih Kelas --</option>
+                            @foreach($kelases as $k)
+                                <option value="{{ $k->id }}" {{ old('kelase_id') == $k->id ? 'selected' : '' }}>
+                                    {{ $k->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('kelase_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
                 <div class="form-group">

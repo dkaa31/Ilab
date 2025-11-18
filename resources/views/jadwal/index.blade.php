@@ -57,6 +57,7 @@
                         <th>Waktu</th>
                         <th>Guru</th>
                         <th>Mapel</th>
+                        <th>Kelas</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
@@ -68,6 +69,7 @@
                         <td>{{ $j->waktu_mulai }} - {{ $j->waktu_selesai }}</td>
                         <td>{{ $j->guru?->nama ?? '–' }}</td>
                         <td>{{ $j->mapel?->nama ?? 'Istirahat' }}</td>
+                        <td>{{ $j->kelase?->nama ?? '–' }}</td>
                         <td>{{ $j->ruangan->nama }}</td>
                         <td>
                             <a href="{{ route('jadwal.edit', $j->id) }}" class="btn btn-sm btn-warning">Edit</a>

@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "poppins", sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 body {
@@ -11,170 +11,287 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 0;
+  overflow: hidden;
 }
 
 .container {
   background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 3);
-  width: 100%;
-  max-width: 1000px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 50px;
   position: relative;
+  overflow-y: auto;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .logos {
   position: absolute;
   top: 20px;
-  right: 20px;
+  right: 30px;
   display: flex;
-  gap: 10px;
+  gap: 15px;
+  z-index: 10;
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.logo:hover {
+  opacity: 1;
 }
 
 .header {
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .jam {
-  font-size: 24px;
-  margin-bottom: 10px;
-  font-weight: bold;
+  font-size: 20px;
+  color: #3b82f6;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .waktu-digital {
-  font-size: 48px;
+  font-size: 64px;
   font-weight: bold;
   color: #0a2647;
-  margin-bottom: 10px;
 }
 
 .tanggal {
-  font-size: 24px;
-  color: #666;
-  margin-bottom: 20px;
+  font-size: 26px;
+  color: #555;
+  margin-top: 10px;
 }
 
 .info {
   display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 15px;
   align-items: center;
+  gap: 40px;
+  margin-bottom: 40px;
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  justify-content: center;
 }
 
 .foto-guru {
-  width: 120px;
-  height: 120px;
-  border-radius: 60px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #3b82f6;
+  border: 6px solid #3b82f6;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.foto-guru:hover {
+  transform: scale(1.03);
 }
 
 .info-lab {
   flex-grow: 1;
+  text-align: center;
 }
 
 .waktu {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
-  margin-bottom: 5px;
+  color: #333;
+  margin-bottom: 8px;
 }
 
 .guru {
-  font-size: 18px;
-  margin-bottom: 5px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #0a2647;
+  margin-bottom: 6px;
 }
 
 .mapel {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
-  color: #0a2647;
+  color: #3b82f6;
+  margin-top: 10px;
+}
+
+.lab-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 180px;
 }
 
 .lab {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: bold;
   color: #3b82f6;
 }
 
+.kelas {
+  font-size: 24px;
+  color: #666;
+  font-weight: 600;
+}
+
 .jadwal-container {
-  margin-top: 30px;
+  flex-grow: 1;
   border-top: 2px solid #eee;
-  padding-top: 20px;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
+  padding-top: 30px;
+  margin-top: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .jadwal-judul {
-  font-size: 20px;
+  font-size: 28px;
   color: #0a2647;
-  margin-bottom: 15px;
   font-weight: bold;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
 .jadwal-scroll {
   display: flex;
-  transition: transform 1s ease;
-  gap: 15px;
-  padding: 10px 0;
+  gap: 20px;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
   width: max-content;
 }
 
-@media (max-width: 768px) {
-  .info {
-    flex-direction: column;
-    text-align: center;
-  }
+.jadwal-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .jadwal-item {
-    flex: 0 0 300px;
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    border-left: 4px solid #3b82f6;
-    margin-left: 15px;
+  flex: 0 0 320px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  border-left: 5px solid #3b82f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .jadwal-item.active {
-    background: #e3f2fd;
-    border-left: #2563eb;
-    transform: scale(1.02);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #e3f2fd;
+  border-left-color: #2563eb;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
 }
 
 .jadwal-detail h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
-    color: #0a2647;
+  font-size: 20px;
+  color: #0a2647;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .jadwal-detail p {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 5px;
+  font-size: 17px;
+  color: #555;
+  margin: 4px 0;
 }
 
 .jadwal-detail p:last-child {
-    margin-bottom: 0;
-    color: #3b82f6;
-    font-weight: bold;
+  color: #3b82f6;
+  font-weight: bold;
+  margin-bottom: 0;
 }
 
 .jadwal-kosong {
+  text-align: center;
+  color: #888;
+  font-size: 24px;
+  font-style: italic;
+  padding: 40px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  .container {
+    padding: 25px 20px;
+  }
+
+  .info {
+    flex-direction: column;
     text-align: center;
-    color: #666;
-    font-style: italic;
-    padding: 20px;
-    font-size: 18px;
+    gap: 20px;
+  }
+
+  .foto-guru {
+    width: 180px;
+    height: 180px;
+  }
+
+  .waktu-digital {
+    font-size: 48px;
+  }
+
+  .tanggal {
+    font-size: 22px;
+  }
+
+  .mapel {
+    font-size: 26px;
+  }
+
+  .lab {
+    font-size: 24px;
+  }
+
+  .kelas {
+    font-size: 20px;
+  }
+
+  .jadwal-judul {
+    font-size: 24px;
+  }
+
+  .jadwal-item {
+    flex: 0 0 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .waktu-digital {
+    font-size: 40px;
+  }
+
+  .tanggal {
+    font-size: 20px;
+  }
+
+  .foto-guru {
+    width: 160px;
+    height: 160px;
+  }
+
+  .jadwal-item {
+    flex: 0 0 240px;
+  }
+
+  .jadwal-kosong {
+    font-size: 20px;
+    padding: 30px;
+  }
 }

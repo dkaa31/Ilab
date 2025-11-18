@@ -3,14 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\jadwal;
+use App\Models\Ruangan;
+use App\Models\Jadwal;
 use App\Models\Guru;
 use Carbon\Carbon;
 
-class TampilanController extends Controller
+class LabController extends Controller
 {
-   public function index()
+    //pemilihan lab
+    public function selector()
     {
+        $ruangans = Ruangan::orderBy('nama')->get();
+        return view('lab.selector', compact('ruangans'));
+    }
+
+    //dashboard dinamis
+    public function show($ruanganId)
+    {
+        $ruangan = Ruangan::findOrFail($ruanganId);
+        
         $hariIni = match(Carbon::now()->dayOfWeek) {
             0 => 'Minggu',
             1 => 'Senin',
@@ -21,8 +32,10 @@ class TampilanController extends Controller
             6 => 'Sabtu',
         };
 
-        $jadwalDb = Jadwal::with(['guru', 'mapel', 'ruangan'])
+    //ambil jadwal hari ini
+    $jadwalDb = Jadwal::with(['guru', 'mapel', 'ruangan', 'kelase'])
             ->where('hari', $hariIni)
+            ->where('ruangan_id', $ruanganId)
             ->orderBy('waktu_mulai')
             ->get();
 
@@ -39,16 +52,36 @@ class TampilanController extends Controller
             ];
         })->values();
 
-        $penanggungJawab = Guru::whereHas('ruangans', function ($query) {
-            $query->where('nama', 'LAB 2');
-        })->first();
+        // Ambil penanggung jawab dari ruangan
+        $penanggungJawab = $ruangan->penanggungJawab;
+
+        // Tentukan kelas untuk ditampilkan
+        $kelasNama = 'Tidak Ada Kelas';
+        if ($jadwalDb->isNotEmpty()) {
+            $currentTime = now()->format('H:i');
+            $jadwalAktif = null;
+
+            foreach ($jadwalDb as $j) {
+                if ($currentTime >= $j->waktu_mulai && $currentTime < $j->waktu_selesai) {
+                    $jadwalAktif = $j;
+                    break;
+                }
+            }
+
+            if ($jadwalAktif) {
+                $kelasNama = $jadwalAktif->kelase?->nama ?? 'Kelas Tidak Ada';
+            } else {
+                $kelasNama = $jadwalDb->first()->kelase?->nama ?? 'Kelas Tidak Ada';
+            }
+        }
 
         $penanggungjawabLab = [
             'nama' => $penanggungJawab?->nama ?? 'Penanggung Jawab Belum Ditentukan',
             'foto' => $penanggungJawab && $penanggungJawab->foto
                 ? asset('storage/' . $penanggungJawab->foto)
                 : asset('storage/default.png'),
-            'lab' => 'LAB 2',
+            'lab' => $ruangan->nama,
+            'kelas' => $kelasNama,
         ];
 
         $jadwalKosong = $jadwalHarian->isEmpty();

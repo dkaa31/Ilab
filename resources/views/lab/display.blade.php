@@ -32,7 +32,10 @@
         <div class="guru"></div>
         <div class="mapel"></div>
       </div>
-      <div class="lab">{{ $penanggungjawabLab['lab'] }}</div>
+      <div class="lab-info">
+        <div class="lab">{{ $penanggungjawabLab['lab'] }}</div>
+        <div class="kelas">{{ $penanggungjawabLab['kelas'] }}</div>
+      </div>
     </div>
 
     <div class="jadwal-container">
